@@ -1,1 +1,40 @@
-node_modules\n.env\n/log\n/tmp\n/db/*.sqlite3
+# Frontend
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.test
+frontend/.env.production
+build/
+coverage/
+.npm
+.DS_Store
+
+# Backend
+backend/log/*
+backend/tmp/*
+!backend/log/.keep
+!backend/tmp/.keep
+backend/tmp/pids/*
+!backend/tmp/pids/
+!backend/tmp/pids/.keep
+backend/storage/*
+!backend/storage/.keep
+backend/db/*.sqlite3
+backend/db/*.sqlite3-journal
+backend/db/*.sqlite3-*
+backend/public/assets
+backend/config/master.key
+backend/.byebug_history
+backend/.env
+backend/.env.*
+backend/config/credentials/*.key
+backend/.bundle
+backend/vendor/bundle
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
