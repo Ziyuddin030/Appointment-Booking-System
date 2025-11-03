@@ -1,29 +1,31 @@
+---
 
-```markdown
 # 🩺 Appointment Booking System (Rails + React Monorepo)
 
-A modern **Appointment Booking System** built with **Ruby on Rails (API-only backend)** and **React (frontend)**.  
+A modern **Appointment Booking System** built with **Ruby on Rails (API-only backend)** and **React (frontend)**.
 It allows users to sign up, log in, view available time slots, and manage (book, view, and cancel) their appointments.
 
 ---
 
 ## ⚙️ Technology Stack
 
-- **Backend:**
-  - Ruby 3.2.2
-  - Ruby on Rails 7.1.6 (API-only)
-  - PostgreSQL
-  - JWT & BCrypt for authentication
-  - Rack CORS for API access
-- **Frontend:**
-  - React 18.3
-  - Material-UI 7.3
-  - React Router 7.9
-  - Axios for API calls
-  - Day.js for date handling
-- **Database:** PostgreSQL
-- **Authentication:** JWT using Rails secrets
-- **API Architecture:** RESTful
+* **Backend:**
+
+  * Ruby 3.2.2
+  * Ruby on Rails 7.1.6 (API-only)
+  * PostgreSQL
+  * JWT & BCrypt for authentication
+  * Rack CORS for API access
+* **Frontend:**
+
+  * React 18.3
+  * Material-UI 7.3
+  * React Router 7.9
+  * Axios for API calls
+  * Day.js for date handling
+* **Database:** PostgreSQL
+* **Authentication:** JWT using Rails secrets
+* **API Architecture:** RESTful
 
 ---
 
@@ -39,28 +41,30 @@ appointment-booking-system/
 │   └── ...
 │
 └── frontend/          # React app
-├── src/
-├── public/
-└── ...
-
-````
+    ├── src/
+    ├── public/
+    └── ...
+```
 
 ---
 
 ## 🧰 System Requirements
 
-- Node.js 18+ and npm
-- Ruby 3.2.2
-- PostgreSQL 12+
-- Git
+* Node.js 16+ and npm
+* Ruby 3.2.2
+* PostgreSQL 12+
+* Git
+
+---
 
 ## 🧰 Local Setup
 
 ### 1️⃣ Clone Repository
+
 ```bash
 git clone https://github.com/your-username/appointment-booking-system.git
 cd appointment-booking-system
-````
+```
 
 ---
 
@@ -83,11 +87,13 @@ password: your_postgres_password
 ```
 
 Create a master key and credentials (if not exists):
+
 ```bash
 rails credentials:edit
 ```
 
 Set up your environment variables in `config/environments/development.rb`:
+
 ```ruby
 config.allowed_cors_origins = ['http://localhost:3001']
 ```
@@ -299,7 +305,7 @@ curl -X DELETE http://localhost:3000/api/appointments/1 \
 
 ---
 
-## � Error Handling
+## ⚠️ Error Handling
 
 All API endpoints follow consistent error response formats:
 
@@ -312,34 +318,34 @@ All API endpoints follow consistent error response formats:
 
 ### HTTP Status Codes
 
-- `200 OK`: Successful request
-- `201 Created`: Resource successfully created
-- `400 Bad Request`: Invalid parameters
-- `401 Unauthorized`: Missing or invalid authentication
-- `403 Forbidden`: Authenticated but not authorized
-- `404 Not Found`: Resource not found
-- `422 Unprocessable Entity`: Validation errors
-- `500 Internal Server Error`: Server error
+* `200 OK` — Successful request
+* `201 Created` — Resource successfully created
+* `400 Bad Request` — Invalid parameters
+* `401 Unauthorized` — Missing or invalid authentication
+* `403 Forbidden` — Authenticated but not authorized
+* `404 Not Found` — Resource not found
+* `422 Unprocessable Entity` — Validation errors
+* `500 Internal Server Error` — Server error
 
 ---
 
-## �🚀 Run the Application
+## 🚀 Run the Application
 
-**Backend (Rails)**
+**Backend (Rails):**
 
 ```bash
 cd backend
 rails s
 ```
 
-**Frontend (React)**
+**Frontend (React):**
 
 ```bash
 cd frontend
 npm start
 ```
 
-### Application URLs:
+### Application URLs
 
 * **Backend API:** [http://localhost:3000](http://localhost:3000)
 * **Frontend App:** [http://localhost:3001](http://localhost:3001)
