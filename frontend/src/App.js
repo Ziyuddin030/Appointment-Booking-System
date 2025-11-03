@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import AuthForm from './components/AuthForm';
 import AppointmentsPage from './pages/AppointmentsPage';
 import api from './api';
+import dayjs from 'dayjs';
 import './App.css';
 
 // Create a theme instance
@@ -55,25 +56,70 @@ export default function App() {
     setSlotsLoading(true);
     try {
       console.log('Fetching available slots...');
-      // Add a cache-busting parameter when invalidateCache is true
-      const url = '/appointments/available' + (invalidateCache ? `?t=${Date.now()}` : '');
+      // Add timezone and cache-busting parameters
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const url = `/appointments/available?timezone=${encodeURIComponent(timezone)}${invalidateCache ? `&t=${Date.now()}` : ''}`;
       const res = await api.get(url);
       console.log('Raw API Response for slots:', res);
       
       if (!res.data) {
         console.error('No data received from slots API');
+        setSlots([]);
         return [];
       }
       
       // Get slots array from response, ensuring we handle both array and object responses
-      const slotsData = Array.isArray(res.data) ? res.data : 
-                       Array.isArray(res.data.slots) ? res.data.slots : [];
+      let slotsData = Array.isArray(res.data) ? res.data : 
+                      Array.isArray(res.data.slots) ? res.data.slots : [];
       
-      console.log('Received slots data:', slotsData);
+      // Generate all possible slots for the current week
+      const currentWeek = dayjs().startOf('isoWeek');
+      const allSlots = [];
       
-      // Update slots state with the new data
-      setSlots(slotsData);
-      return slotsData;
+      // Generate slots for each working day (Mon-Fri)
+      for (let day = 0; day < 5; day++) {
+        const currentDate = currentWeek.add(day, 'day');
+        
+        // Generate slots for business hours (9 AM to 5 PM)
+        for (let hour = 9; hour < 17; hour++) {
+          for (let minute = 0; minute < 60; minute += 30) {
+            const slotTime = currentDate
+              .hour(hour)
+              .minute(minute)
+              .second(0)
+              .millisecond(0);
+              
+            // Only add future slots
+            if (slotTime.isAfter(dayjs())) {
+              allSlots.push({
+                starts_at: slotTime.format('YYYY-MM-DDTHH:mm:ss'),
+                available: true // Default to available
+              });
+            }
+          }
+        }
+      }
+      
+      // Merge API data with generated slots
+      const mergedSlots = allSlots.map(baseSlot => {
+        const matchingApiSlot = slotsData.find(
+          apiSlot => dayjs(apiSlot.starts_at).format('YYYY-MM-DDTHH:mm') === 
+                     dayjs(baseSlot.starts_at).format('YYYY-MM-DDTHH:mm')
+        );
+        
+        return {
+          ...baseSlot,
+          ...matchingApiSlot,
+          // If we have API data, use its availability, otherwise keep as available
+          available: matchingApiSlot ? matchingApiSlot.available : true
+        };
+      });
+      
+      console.log('Processed slots data:', mergedSlots);
+      
+      // Update slots state with the validated data
+      setSlots(mergedSlots);
+      return mergedSlots;
     } catch (error) {
       console.error('Error fetching slots:', error);
       // In case of error, set slots to empty array to prevent stale data

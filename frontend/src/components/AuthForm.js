@@ -6,8 +6,7 @@ import {
   Button,
   Typography,
   Box,
-  Alert,
-  Link
+  Alert
 } from '@mui/material';
 import api from '../api';
 import '../styles/AuthForm.css';

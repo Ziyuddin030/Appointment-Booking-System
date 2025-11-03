@@ -84,6 +84,7 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
     console.log('Full slots array:', slots);
     
     const availability = {};
+    const now = dayjs();
 
     // Process the API data
     if (Array.isArray(slots)) {
@@ -99,10 +100,33 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
             raw_slot: slot
           });
 
+          const isPast = slotDate.isBefore(now);
+          
           availability[key] = {
-            isBooked: slot.available === false,
+            isBooked: isPast ? true : !slot.available,
             slot: slot,
-            exists: true
+            exists: true,
+            isPast: isPast
+          };
+        }
+      });
+    }
+    
+    // Add non-existent slots as unavailable
+    const weekStart = currentWeek;
+    for (let day = 0; day < 5; day++) {
+      const currentDate = weekStart.add(day, 'day');
+      timeSlots.forEach(time => {
+        const [hours, minutes] = time.split(':').map(Number);
+        const slotDate = currentDate.hour(hours).minute(minutes);
+        const key = `${slotDate.format('YYYY-MM-DD')}-${time}`;
+        
+        if (!availability[key]) {
+          const isPast = slotDate.isBefore(now);
+          availability[key] = {
+            isBooked: true,
+            exists: false,
+            isPast: isPast
           };
         }
       });
@@ -110,7 +134,7 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
     
     console.log('Final availability map:', availability);
     return availability;
-  }, [slots]);
+  }, [slots, currentWeek, timeSlots]); // Added missing dependencies
 
   const handleSlotClick = (day, time) => {
     // Create a date object with the selected day and time
@@ -180,7 +204,7 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
   // Initial fetch for the current week
   useEffect(() => {
     fetchSlots(currentWeek.format('YYYY-MM-DD'));
-  }, [currentWeek]); // Depend on currentWeek to refetch when it changes
+  }, [currentWeek, fetchSlots]); // Added fetchSlots to dependencies
 
   // Check if week is current or future
   const isCurrentWeek = currentWeek.isSame(dayjs().startOf('isoWeek'), 'week');
@@ -232,20 +256,17 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
               
               console.log(`Rendering slot ${slotKey}:`, { slotInfo, isPast });
               
-              // Slot is only available if it exists in our data and is explicitly marked as available
-              const isAvailable = slotInfo?.exists && !slotInfo?.isBooked;
               const isBooked = slotInfo?.exists && slotInfo?.isBooked;
               
               return (
                 <div
                   key={slotKey}
-                  className={`calendar-slot ${isBooked ? 'booked' : ''} ${isPast ? 'past' : ''} ${!slotInfo?.exists ? 'unavailable' : ''}`}
-                  onClick={() => isAvailable && !isPast && handleSlotClick(day, time)}
+                  className={`calendar-slot ${isBooked ? 'booked' : ''} ${isPast ? 'past' : ''}`}
+                  onClick={() => !isBooked && !isPast && handleSlotClick(day, time)}
                 >
-                  {isBooked && <span className="status">Booked</span>}
-                  {isAvailable && !isPast && <span className="status">Available</span>}
-                  {!slotInfo?.exists && <span className="status">Unavailable</span>}
-                  {isPast && <span className="status">Past</span>}
+                  {slotInfo?.isPast && <span className="status">Past</span>}
+                  {!slotInfo?.isPast && isBooked && <span className="status">Booked</span>}
+                  {!slotInfo?.isPast && !isBooked && <span className="status">Available</span>}
                 </div>
               );
             })}
