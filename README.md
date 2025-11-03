@@ -350,9 +350,21 @@ npm start
 * **Backend API:** [http://localhost:3000](http://localhost:3000)
 * **Frontend App:** [http://localhost:3001](http://localhost:3001)
 
+#### Application deployed URLs(render)
+
+* **Backend API:** [https://appointment-booking-system-h1d0.onrender.com/](https://appointment-booking-system-h1d0.onrender.com/)
+* **Frontend App:** [https://appointment-booking-system-1-kkdz.onrender.com/](https://appointment-booking-system-1-kkdz.onrender.com/)
+
+### 🎥 Demo / Recording
+
+You can view the demo recording here:
+
+https://github.com/user-attachments/assets/f391075a-ae70-4ab7-87d1-7cda6e3a685c
+
 ---
 
 💡 **Note:**
 JWT secret is managed securely by **Rails credentials** (`Rails.application.secret_key_base`), so you don’t need to create a `.env` file for JWT manually.
 
 ---
+
