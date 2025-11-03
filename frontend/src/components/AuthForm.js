@@ -28,7 +28,17 @@ export default function AuthForm({ onAuthSuccess }) {
       localStorage.setItem('token', res.data.token);
       onAuthSuccess();
     } catch (err) {
-      setMsg(err.response?.data?.errors.join(', ') || 'Authentication failed. Please try again.');
+      if (mode === 'signup') {
+        // For signup, handle validation errors array
+        const errorMessage = err.response?.data?.errors
+          ? err.response.data.errors.join(', ')
+          : 'Failed to sign up. Please try again.';
+        setMsg(errorMessage);
+      } else {
+        // For login, handle specific error messages
+        const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Login failed. Please try again.';
+        setMsg(errorMessage);
+      }
     }
   }
 

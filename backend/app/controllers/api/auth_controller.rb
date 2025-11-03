@@ -13,11 +13,16 @@ class Api::AuthController < ApplicationController
 
   def login
     user = User.find_by(email: params[:email])
-    if user&.authenticate(params[:password])
+    if user.nil?
+      render json: { 
+        error: 'User not found',
+        message: 'Please sign up if you haven\'t created an account yet'
+      }, status: :not_found
+    elsif user.authenticate(params[:password])
       token = JsonWebToken.encode(user_id: user.id)
       render json: { token:, user: user.slice(:id, :name, :email) }
     else
-      render json: { error: 'Invalid credentials' }, status: :unauthorized
+      render json: { error: 'Invalid password' }, status: :unauthorized
     end
   end
 
