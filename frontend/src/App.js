@@ -134,7 +134,6 @@ export default function App() {
     setIsLoading(true);
     try {
       const res = await api.get(`/appointments?page=${page}&per_page=${per_page}`);
-      console.log('API Response for appointments:', res.data);
       const { appointments: appointmentsData, ...meta } = res.data;
       setAppointments(appointmentsData);
       setAppointmentsMeta(meta);
@@ -147,10 +146,9 @@ export default function App() {
 
   async function createAppointment(data) {
     try {
-      console.log('Creating appointment with data:', data);
       const res = await api.post('/appointments', data);
-      console.log('Appointment creation response:', res.data);
       await Promise.all([fetchAppointments(), fetchSlots()]);
+      return res;
     } catch (error) {
       console.error('Error creating appointment:', error);
       throw error; // Re-throw to handle in the form

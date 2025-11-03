@@ -4,6 +4,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import weekday from 'dayjs/plugin/weekday';
 import PropTypes from 'prop-types';
 import BookingForm from './BookingForm';
+import { Alert, Snackbar } from '@mui/material';
 
 dayjs.extend(isoWeek);
 dayjs.extend(weekday);
@@ -27,6 +28,8 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
   const [error, setError] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [alert, setAlert] = useState({ open: false, type: '', text: '' });
+
 
   // Update slots when initialSlots prop changes
   useEffect(() => {
@@ -176,21 +179,16 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
   };
 
   const handleBookAppointment = async (formData) => {
-    if (onSlotBook) {
-      try {
-        console.log('Booking appointment with data:', formData);
-        await onSlotBook(formData);
-        console.log('Appointment booked successfully');
-        
-        // Force immediate refresh of the current week's slots
-        await fetchSlots(currentWeek.format('YYYY-MM-DD'));
-        console.log('Slots refreshed after booking');
-        
-        handleCloseModal();
-      } catch (error) {
-        console.error('Failed to book appointment:', error);
-        throw error;
-      }
+    try {
+      console.log('Booking appointment with data:', formData);
+      const res = await onSlotBook(formData);
+      console.log('Appointment booked successfully');
+      
+      await fetchSlots(currentWeek.format('YYYY-MM-DD'));
+      setAlert({ open: true, type: 'success', text: 'Appointment booked successfully!' });
+    } catch (error) {
+      console.error('Failed to book appointment:', error);
+      setAlert({ open: true, type: 'error', text: error.response?.data?.errors.join(',') || 'Failed to book appointment. Please try again.' });
     }
   };
 
@@ -282,6 +280,16 @@ export default function Calendar({ slots: initialSlots, onSlotBook }) {
           onClose={handleCloseModal}
         />
       )}
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={3000}
+        onClose={() => setAlert({ ...alert, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={alert.type} variant="filled" onClose={() => setAlert({ ...alert, open: false })}>
+          {alert.text}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
